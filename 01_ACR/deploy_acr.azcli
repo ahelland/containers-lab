@@ -1,0 +1,8 @@
+# Log in to Azure
+az login
+
+# Create a resource group (if you don't have one)
+az group create --name rg-acr --location norwayeast
+
+# Deploy the Bicep file
+az deployment group create --resource-group rg-acr --template-file main.bicep
