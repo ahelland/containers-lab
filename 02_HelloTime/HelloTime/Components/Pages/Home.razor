@@ -1,0 +1,85 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="clock-container">
+    <div class="clock">
+        <div class="digital-clock">
+            <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span>
+        </div>
+    </div>
+</div>
+
+@code {
+}
+
+<style>
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.clock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.clock {
+    text-align: center;
+}
+
+.digital-clock {
+    font-size: 12rem;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 
+        0 0 10px #ff0000,
+        0 0 20px #ff0000,
+        0 0 40px #ff0000,
+        0 0 80px #ff0000;
+    padding: 20px;
+    background-color: #000000;
+    border: 4px solid #330000;
+    border-radius: 10px;
+    box-shadow: 
+        inset 0 0 20px #000000,
+        0 0 30px rgba(255, 0, 0, 0.3);
+    letter-spacing: 5px;
+}
+
+.digital-clock span {
+    min-width: 0.6em;
+    display: inline-block;
+    text-align: center;
+}
+</style>
+
+<script>
+    window.onload = function() {
+        function updateClock() {
+            var now = new Date();
+            document.getElementById('hours').textContent = String(now.getHours()).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(now.getSeconds()).padStart(2, '0');
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    };
+</script>
+

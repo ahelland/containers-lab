@@ -1,0 +1,13 @@
+# Retrieving the ACR name and logging in to ACR
+# Assumption is that the ACR was created in a previous step and is the only one in the named resource group
+ACR_NAME=$(az acr list --resource-group rg-acr --query "[0].name" -o tsv)
+echo "ACR_NAME: $ACR_NAME"
+
+az acr login --name $ACR_NAME
+
+# Build and push the HelloTime image
+az acr build \
+  --registry $ACR_NAME \
+  --image hellotime:v1 \
+  --file HelloTime/Dockerfile \
+  .
