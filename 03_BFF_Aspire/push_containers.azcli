@@ -1,0 +1,18 @@
+# Retrieving the ACR name and logging in to ACR
+# Assumption is that the ACR was created in a previous step and is the only one in the resource group
+ACR_NAME=$(az acr list --resource-group rg-acr --query "[0].name" -o tsv)
+az acr login --name $ACR_NAME
+
+# Build and push the WeatherAPI image
+az acr build \
+  --registry $ACR_NAME \
+  --image bff-weatherapi:v1 \
+  --file WeatherAPI/Dockerfile \
+  .
+
+# Build and push the WebApp image
+az acr build \
+  --registry $ACR_NAME \
+  --image bff-webapp:v1 \
+  --file BFF_Web_App/Dockerfile \
+  .

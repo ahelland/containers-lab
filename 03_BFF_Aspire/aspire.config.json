@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "BFF_Web_App.AppHost/BFF_Web_App.AppHost.csproj"
+  }
+}
