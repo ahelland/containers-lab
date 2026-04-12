@@ -1,0 +1,4 @@
+# Deployment stack would be preferred, but is not compabitble with the Bicep Graph provider
+# az stack sub create --name bff-aca --location norwayeast --template-file main.bicep --parameters main.bicepparam --deny-settings-mode none --action-on-unmanage detachAll
+
+az deployment sub create --template-file main.bicep --parameters main.bicepparam --location norwayeast
