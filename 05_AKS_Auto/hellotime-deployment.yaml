@@ -1,0 +1,149 @@
+# Namespace for the time application
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: time
+  labels:
+    name: time
+---
+# Service Account for the application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: time-webapp-sa
+  namespace: time
+  labels:
+    app: time-webapp
+---
+# Deployment for time Web App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: time-webapp
+  namespace: time
+  labels:
+    app: time-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: time-webapp
+  template:
+    metadata:
+      labels:
+        app: time-webapp
+    spec:
+      serviceAccountName: time-webapp-sa
+      containers:
+        - name: timewebapp
+          image: $ACR_LOGIN_SERVER.azurecr.io/hellotime:v1
+          ports:
+            - containerPort: 8080
+              name: http
+            #- containerPort: 8081
+            #  name: https
+          env:
+            #- name: ASPNETCORE_HTTPS_PORTS
+            #  value: "8081"
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "8080"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      imagePullSecrets:
+        - name: acr-secret
+
+---
+# Service for time Web App
+apiVersion: v1
+kind: Service
+metadata:
+  name: time-webapp
+  namespace: time
+  labels:
+    app: time-webapp
+spec:
+  selector:
+    app: time-webapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 8081
+      protocol: TCP
+  type: LoadBalancer
+---
+# Ingress for time Web App (requires ingress controller)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: time-webapp-ingress
+  namespace: time
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: time-webapp
+                port:
+                  number: 80
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: time-webapp-hpa
+  namespace: time
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: time-webapp
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: time-webapp-pdb
+  namespace: time
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: time-webapp

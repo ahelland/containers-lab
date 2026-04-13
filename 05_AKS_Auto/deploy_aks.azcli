@@ -1,0 +1,26 @@
+az stack sub create --name aks-auto --location norwayeast --template-file main.bicep --parameters main.bicepparam --deny-settings-mode none --action-on-unmanage detachAll
+
+# Assigning AKS permissions to the current user
+az role assignment create \
+  --role "Azure Kubernetes Service Cluster Admin Role" \
+  --assignee $(az account show --query user.name -o tsv) \
+  --scope $(az aks show --resource-group rg-aks-auto --name auto --query id -o tsv)
+
+az role assignment create \
+  --role "Azure Kubernetes Service RBAC Admin" \
+  --assignee $(az account show --query user.name -o tsv) \
+  --scope $(az aks show --resource-group rg-aks-auto --name auto --query id -o tsv)
+
+az role assignment create \
+  --role "Azure Kubernetes Service RBAC Cluster Admin" \
+  --assignee $(az account show --query user.name -o tsv) \
+  --scope $(az aks show --resource-group rg-aks-auto --name auto --query id -o tsv)
+
+# Get AKS credentials
+az aks get-credentials --resource-group rg-aks-auto --name auto
+
+# Get ACR credentials and create a Kubernetes secret for pulling images from ACR
+./create-acr-secret.sh rg-acr
+
+# Deploying the application to AKS
+kubectl apply -f hellotime-deployment.yaml
