@@ -157,7 +157,6 @@ resource app 'Microsoft.Graph/applications@v1.0' = {
       usage: 'Verify'
       type: 'AsymmetricX509Cert'
       key: createAddCertificate.properties.outputs.certKey
-      startDateTime: createAddCertificate.properties.outputs.certStart
       endDateTime: createAddCertificate.properties.outputs.certEnd
     }
   ]
