@@ -141,7 +141,7 @@ module weatherapi './modules/containers/container-app/main.bicep' = {
     resourceTags: resourceTags
     containerAppEnvironmentId: containerenvironment.outputs.id
     containerRegistry: '${acrName}.azurecr.io'
-    containerImage: '${acrName}.azurecr.io/bff-weatherapi:latest'
+    containerImage: '${acrName}.azurecr.io/bff-weatherapi:v1'
     targetPort: 8080
     transport: 'http'
     externalIngress: false
