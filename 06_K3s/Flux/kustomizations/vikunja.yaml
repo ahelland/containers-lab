@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: vikunja
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: "./06_K3s/Flux/vikunja"
+  prune: true
+  dependsOn:
+    - name: cluster-sync
+  sourceRef:
+    kind: GitRepository
+    name: gitops-config
