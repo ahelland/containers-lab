@@ -45,3 +45,16 @@ spec:
       ingress:
         main:
           enabled: false
+
+      configMaps:
+        config:
+          enabled: true
+          data:
+            # Vikunja requires service.publicurl while cors.enable is true
+            # (the default); with publicurl unset the app exits immediately ->
+            # CrashLoopBackOff. We keep this file generic (no hard-coded public
+            # URL) by simply disabling CORS. If CORS is wanted later, set
+            # service.publicurl in the UI / a follow-up ConfigMap.
+            config.yml: |
+              cors:
+                enable: false
