@@ -21,7 +21,8 @@ And we know that friends don't let friends right-click & publish so not entirely
 - 02_HelloTime: A simple .NET 10 app that shows the current time.
 - 03_BFF_Aspire: A .NET 10 Backend-for-Frontend (BFF) Blazor sample app.
 - 04_ACA: Bicep for deploying an Azure Container Apps Environment and subsequent deployment of the containers making up the BFF.
-- 04_AKS_Auto: Bicep for deploying an AKS Automatic cluster.
+- 05_AKS_Auto: Bicep for deploying an AKS Automatic cluster.
+- 06_K3s: Files for getting a K3s cluster up and running with a sample configuration.
 
 ## Deploying and running code
 Start with logging in to Azure:  
@@ -64,6 +65,20 @@ deploy_cae.azcli
 _05_AKS_Auto_  
 Deploy AKS cluster and the HelloTime app:  
 `deploy_aks.azcli`
+
+_06_K3s_  
+Deploys a K3s cluster connected via Azure ARC with Workload Identity, Cert-Manager, Traefik and Flux.  
+The deployment is split into multiple (logical) pieces and must be run in order.
+
+First clone the repo to the box you want to install on. In _env.sh_ the DNS zone must be changed since it's just a dummy value, and the others are optional to edit.  
+```
+source 00_deploy_k3s_vm.sh //If a VM is needed
+source 01_onboarding.sh
+source 02_certificates.sh
+source 03_traefik.sh
+source 04a_flux_bootstrap.sh
+source 04b_flux_config.sh
+```
 
 ## Authentication / Authorization 
 There's some Entra sauce behind the scenes with the BFF web app you might want to take note of. (That is actually leaning towards best practice.)  
